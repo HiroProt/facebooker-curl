@@ -12,6 +12,7 @@ development:
   canvas_page_name:
   callback_url:
   pretty_errors: true
+  timeout: 15
   tunnel:
     public_host_username: 
     public_host: 
@@ -23,6 +24,7 @@ test:
   secret_key: 
   canvas_page_name: 
   callback_url:
+  timeout: 15
   tunnel:
     public_host_username: 
     public_host: 
@@ -34,6 +36,7 @@ production:
   secret_key: 
   canvas_page_name: 
   callback_url:  
+  timeout: 15
   tunnel:
     public_host_username: 
     public_host: 

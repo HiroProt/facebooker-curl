@@ -66,6 +66,7 @@ module Facebooker
         ENV['FACEBOOK_SECRET_KEY'] = facebooker['secret_key']
         ENV['FACEBOOKER_RELATIVE_URL_ROOT'] = facebooker['canvas_page_name']
         ENV['FACEBOOKER_API'] = facebooker['api']
+        ENV['FACEBOOKER_TIMEOUT'] = facebooker['timeout']
         if Object.const_defined?("ActionController")
           ActionController::Base.asset_host = facebooker['callback_url'] if(ActionController::Base.asset_host.blank?)
         end

@@ -11,9 +11,10 @@ module Facebooker
     # TODO: support ssl 
     def post(params)
       attempt = 0
-      call_url = url
-      response = Curl::Easy.http_post(call_url.to_s, to_curb_params(params)).body_str
-      result = Parser.parse(params[:method], response)
+      c = Curl::Easy.new(url.to_s)
+      c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
+      c.http_post(*to_curb_params(params))
+      result = Parser.parse(params[:method], c.body_str)
     rescue Errno::ECONNRESET, EOFError
       if attempt == 0
         attempt += 1
@@ -24,10 +25,9 @@ module Facebooker
     def post_file(params)
       c = Curl::Easy.new(url.to_s)
       c.multipart_form_post = true
-      #c.on_debug {|type, data| puts "#{type}, #{data}"}
+      c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
       ps = to_curb_params(params)
       c.http_post(*ps)
-      puts "RESPONSE: #{c.body_str}"
       Parser.parse(params[:method], c.body_str)
     end
     
@@ -45,7 +45,7 @@ module Facebooker
     def to_curb_params(params)
       parray = []
       params.each_pair do |k,v|
-        parray << (multipart_post_file?(v) ? Curl::PostField.file((k.nil? ? nil : k.to_s), v.filename.to_s) : Curl::PostField.content(k.to_s, v.to_s))
+        parray << (multipart_post_file?(v) ? Curl::PostField.file((k.nil? ? nil : k.to_s), v.filename.to_s) : Curl::PostField.content(k.to_s, v.to_s).to_s)
       end
       parray
     end
