@@ -75,18 +75,18 @@ class SessionTest < Test::Unit::TestCase
     load_bebo_adapter
      
     # @session.send(:service).stubs(:post).returns([{:name => "foo"}])
-     Net::HTTP.stubs(:post_form).returns("<profile_setFBML_response></profile_setFBML_response>")
+     Curl::Easy.stubs(:http_post).returns(flexmock("response", :body_str => "<profile_setFBML_response></profile_setFBML_response>"))
      user = Facebooker::User.new(:uid => "123456")
      user.session = @session
      user.set_profile_fbml("foo","bar","foo")
      assert(true)
-     Net::HTTP.stubs(:post_form).returns("<users_getInfo_response> <user><uid>123456</uid><name>foo</name></user></users_getInfo_response>")
+     Curl::Easy.stubs(:http_post).returns(flexmock("response", :body_str => "<users_getInfo_response> <user><uid>123456</uid><name>foo</name></user></users_getInfo_response>"))
      user.populate(:name)
      assert(true)
      assert_equal("foo", user.name)
      action = Facebooker::Feed::TemplatizedAction.new()
      action.title_template = "foo"
-     Net::HTTP.stubs(:post_form).returns("<feed_publishTemplatizedAction_response>1</feed_publishTemplatizedAction_response>")
+     Curl::Easy.stubs(:http_post).returns(flexmock("response", :body_str => "<feed_publishTemplatizedAction_response>1</feed_publishTemplatizedAction_response>"))
      user.publish_templatized_action(action)
   end
   

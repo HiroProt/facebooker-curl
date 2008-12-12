@@ -77,13 +77,15 @@ class SessionTest < Test::Unit::TestCase
   def test_can_ask_session_to_check_friendship_between_pairs_of_users
     @session = Facebooker::Session.create(ENV['FACEBOOK_API_KEY'], ENV['FACEBOOK_SECRET_KEY'])
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_check_friendship_xml).once.ordered(:posts)
+    example_check_friendship_response = flexmock("response", :body_str => example_check_friendship_xml)
+    mock_http.should_receive(:http_post).and_return(example_check_friendship_response).once.ordered(:posts)
     assert_equal({[222332, 222333] => true, [1240077, 1240079] => false}, @session.check_friendship([[222332, 222333], [1240077, 1240079]]))    
   end
   
   def test_facebook_can_claim_ignorance_as_to_friend_relationships
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_check_friendship_with_unknown_result).once.ordered(:posts)  
+    example_check_friendship_with_unknown_result_response = flexmock("response", :body_str => example_check_friendship_with_unknown_result)
+    mock_http.should_receive(:http_post).and_return(example_check_friendship_with_unknown_result_response).once.ordered(:posts)  
     assert_equal({[1240077, 1240079] => nil}, @session.check_friendship([[1240077, 1240079]]))  
   end
   
@@ -151,7 +153,8 @@ class SessionTest < Test::Unit::TestCase
   def test_can_fql_query_for_users_and_pictures
     @session = Facebooker::Session.create(ENV['FACEBOOK_API_KEY'], ENV['FACEBOOK_SECRET_KEY'])
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_fql_for_multiple_users_and_pics).once.ordered(:posts)  
+    example_fql_for_multiple_users_and_pics_response = flexmock("response", :body_str => example_fql_for_multiple_users_and_pics)
+    mock_http.should_receive(:http_post).and_return(example_fql_for_multiple_users_and_pics_response).once.ordered(:posts)  
     response = @session.fql_query('SELECT name, pic FROM user WHERE uid=211031 OR uid=4801660')
     assert_kind_of Array, response
     assert_kind_of Facebooker::User, response.first

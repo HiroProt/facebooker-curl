@@ -25,16 +25,18 @@ class FacebookAdminTest < Test::Unit::TestCase
   
   def test_can_get_properties
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_get_properties_xml).once.ordered(:posts)
+    example_get_properties_response = flexmock("response", :body_str => example_get_properties_xml)
+    mock_http.should_receive(:http_post).and_return(example_get_properties_response).once.ordered(:posts)
     p = @session.admin.get_app_properties(:application_name, :dev_mode, :canvas_name)
     assert_equal 'Video Jukebox', p.application_name
     assert_equal 0, p.dev_mode
     assert_equal 'my_canvas', p.canvas_name
   end
 
-  def test_can_get_allocation
+  def test_can_get_allocation    
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_get_allocation_xml).once.ordered(:posts)
+    example_get_allocation_response = flexmock("response", :body_str => example_get_allocation_xml)
+    mock_http.should_receive(:http_post).and_return(example_get_allocation_response).once.ordered(:posts)
     alloc = @session.admin.get_allocation(:notifications_per_day)
     assert_equal 40, alloc
   end

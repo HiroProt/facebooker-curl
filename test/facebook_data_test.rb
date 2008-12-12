@@ -17,7 +17,8 @@ class FacebookDataTest < Test::Unit::TestCase
   
   def test_can_get_cookies_for_user
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_get_cookies_xml).once.ordered(:posts)
+    example_get_cookies_response = flexmock("response", :body_str => example_get_cookies_xml)
+    mock_http.should_receive(:http_post).and_return(example_get_cookies_response).once.ordered(:posts)
     cookies = @session.data.get_cookies(508508326)    
     assert_equal 'Foo', cookies.first.name
     assert_equal 'Bar', cookies.first.value
@@ -35,7 +36,8 @@ class FacebookDataTest < Test::Unit::TestCase
   
   def test_can_get_preference
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_get_preference_xml).once.ordered(:posts)
+    example_get_preference_response = flexmock("response", :body_str => example_get_preference_xml)
+    mock_http.should_receive(:http_post).and_return(example_get_preference_response).once.ordered(:posts)
     assert_equal 'hello', @session.data.get_preference(0) 
   end
 

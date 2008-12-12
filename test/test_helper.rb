@@ -24,13 +24,16 @@ class Test::Unit::TestCase
   def expect_http_posts_with_responses(*responses_xml)
     mock_http = establish_session
     responses_xml.each do |xml_string|
-      mock_http.should_receive(:post_form).and_return(xml_string).once.ordered(:posts)
+      resp  = flexmock('resp', :body_str => xml_string)
+      mock_http.should_receive(:http_post).and_return(resp).once.ordered(:posts)
     end   
   end
   
   def establish_session(session = @session)
-    mock = flexmock(Net::HTTP).should_receive(:post_form).and_return(example_auth_token_xml).once.ordered(:posts)
-    mock.should_receive(:post_form).and_return(example_get_session_xml).once.ordered(:posts)
+    auth_token_response = flexmock("response", :body_str => example_auth_token_xml)
+    mock = flexmock(Curl::Easy).should_receive(:http_post).and_return(auth_token_response).once.ordered(:posts)
+    example_get_response = flexmock("response", :body_str => example_get_session_xml)
+    mock.should_receive(:http_post).and_return(example_get_response).once.ordered(:posts)
     session.secure!    
     mock
   end

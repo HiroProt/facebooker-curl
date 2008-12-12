@@ -29,7 +29,8 @@ class TestFacebooker < Test::Unit::TestCase
   end
 
   def test_service_posts_data_to_http_location
-    flexmock(Net::HTTP).should_receive(:post_form).and_return(example_auth_token_xml)
+    auth_token_resp = flexmock('auth_token_resp', :body_str => example_auth_token_xml)
+    flexmock(Curl::Easy).should_receive(:http_post).and_return(auth_token_resp)
     assert_equal("http://www.facebook.com/login.php?api_key=#{@api_key}&v=1.0&auth_token=3e4a22bb2f5ed75114b0fc9995ea85f1", @desktop_session.login_url)
   end
 
@@ -56,7 +57,8 @@ class TestFacebooker < Test::Unit::TestCase
 
   def test_session_can_get_current_logged_in_user_id_and_will_cache
     establish_session
-    flexmock(Net::HTTP).should_receive(:post_form).and_return(example_get_logged_in_user_xml)
+    get_logged_in_user_resp = flexmock('get_logged_in_user_resp', :body_str => example_get_logged_in_user_xml)
+    flexmock(Curl::Easy).should_receive(:http_post).and_return(get_logged_in_user_resp)
     assert_equal(8055, @session.user.id)
   end
 
@@ -206,8 +208,10 @@ class TestFacebooker < Test::Unit::TestCase
   end
   
   def test_session_can_tell_you_if_it_has_been_secured
-    mock = flexmock(Net::HTTP).should_receive(:post_form).and_return(example_auth_token_xml).once.ordered(:posts)
-    mock.should_receive(:post_form).and_return(example_get_session_xml.sub(/1173309298/, (Time.now + 60).to_i.to_s)).once.ordered(:posts)
+    auth_token_resp = flexmock('auth_token_resp', :body_str => example_auth_token_xml)
+    mock = flexmock(Curl::Easy).should_receive(:http_post).and_return(auth_token_resp).once.ordered(:posts)
+    get_session_xml_resp = flexmock('get_session_xml_resp', :body_str => example_get_session_xml.sub(/1173309298/, (Time.now + 60).to_i.to_s))
+    mock.should_receive(:http_post).and_return(get_session_xml_resp).once.ordered(:posts)
     @session.secure!
     assert(@session.secured?)
   end
@@ -250,8 +254,9 @@ class TestFacebooker < Test::Unit::TestCase
   
   def test_can_upload_photo
     mock_http = establish_session
-    mock_http.should_receive(:post_multipart_form).and_return(example_upload_photo_xml).once.ordered(:posts)
-    f = Net::HTTP::MultipartPostFile.new("image.jpg", "image/jpeg", "RAW DATA")
+    example_upload_photo_xml_resp = flexmock('exampl_upload_photo_xml_resp', :body_str => example_upload_photo_xml)
+    mock_http.should_receive(:http_post).and_return(example_upload_photo_xml_resp).once.ordered(:posts)
+    f = Net::HTTP::MultipartPostFile.new("/tmp/image.jpg", "image/jpeg", "RAW DATA")
     assert_equal "Under the sunset", @session.user.upload_photo(f).caption
   end
   
@@ -325,7 +330,8 @@ class TestFacebooker < Test::Unit::TestCase
 
   def test_desktop_apps_cannot_request_to_get_or_set_profile_fbml_for_any_user_other_than_logged_in_user
     mock_http = establish_session(@desktop_session)
-    mock_http.should_receive(:post_form).and_return(example_friends_xml).once.ordered(:posts)
+    example_friends_response = flexmock("response", :body_str => example_friends_xml)
+    mock_http.should_receive(:http_post).and_return(example_friends_response).once.ordered(:posts)
     assert_raises(Facebooker::NonSessionUser) {
       @desktop_session.user.friends.first.profile_fbml
     }
@@ -337,7 +343,8 @@ class TestFacebooker < Test::Unit::TestCase
   private
   def populate_user_info
     mock_http = establish_session
-    mock_http.should_receive(:post_form).and_return(example_user_info_xml).once
+    example_user_info_response = flexmock("response", :body_str => example_user_info_xml)
+    mock_http.should_receive(:http_post).and_return(example_user_info_response).once
     @session.user.populate
   end
 
