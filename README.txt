@@ -4,6 +4,8 @@
 
 == DESCRIPTION:
 
+This is a curl-based version of Mike Mangino's excellent Facebooker library. We needed a more robust version of Facebooker that performs well and supports timeouts without the problems that Net::HTTP has in that area (http://blog.headius.com/2008/02/rubys-threadraise-threadkill-timeoutrb.html, http://ph7spot.com/articles/system_timer). Below is the original description of the facebooker project.
+
 Facebooker is a Ruby wrapper over the Facebook[http://facebook.com] {REST API}[http://developer.facebook.com].  Its goals are:
 
 * Idiomatic Ruby
@@ -15,7 +17,7 @@ Facebooker is a Ruby wrapper over the Facebook[http://facebook.com] {REST API}[h
 == FEATURES/PROBLEMS:
 
 * Idiomatic Ruby
-* No dependencies outside of the Ruby standard library
+* This version is dependent on libcurl and the curb gem (This is true with Rails 2.1. Previous Rails versions also require the JSON gem)
 * Concrete classes and methods modeling the Facebook data, so it's easy for a Rubyist to understand what's available
 * Well tested
 
@@ -25,27 +27,16 @@ View David Clements' {excellent tutorial}[http://apps.facebook.com/facebooker_tu
 
 == REQUIREMENTS:
 
-None
+* libcurl
+* curb gem
 
 == INSTALL:
 
- * Non Rails
-
-The best way is:
-
-  gem install facebooker
-
-If, for some reason, you can't/won't use RubyGems, you can do:
-
-  (sudo) ruby setup.rb
-
   * Rails
 
-Facebooker can be installed as a Rails plugin by:
+Facebooker-curl can be installed as a Rails plugin by:
 
-  script/plugin install git://github.com/mmangino/facebooker.git
-
-If you don't have git, the plugin can be downloaded from http://github.com/mmangino/facebooker/tarball/master
+  script/plugin install git@github.com:HiroProt/facebooker-curl.git
 
 Once the plugin is installed, you will need to configure your Facebook app in config/facebooker.yml. 
 
