@@ -252,11 +252,19 @@ class TestFacebooker < Test::Unit::TestCase
     assert_equal "My Empty Album", @session.user.create_album(:name => "My Empty Album", :location => "Limboland").name
   end
   
+  class Curl::PostField
+    
+    def to_s
+      return "I exist because Curb can't print out file PostFields"
+    end
+    
+  end
+  
   def test_can_upload_photo
     mock_http = establish_session
     example_upload_photo_xml_resp = flexmock('exampl_upload_photo_xml_resp', :body_str => example_upload_photo_xml)
     mock_http.should_receive(:http_post).and_return(example_upload_photo_xml_resp).once.ordered(:posts)
-    f = Net::HTTP::MultipartPostFile.new("/tmp/image.jpg", "image/jpeg", "RAW DATA")
+    f = Net::HTTP::MultipartPostFile.new("image.jpg", "image/jpeg", "RAW DATA")
     assert_equal "Under the sunset", @session.user.upload_photo(f).caption
   end
   

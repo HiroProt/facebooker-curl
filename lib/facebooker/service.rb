@@ -11,10 +11,15 @@ module Facebooker
     # TODO: support ssl 
     def post(params)
       attempt = 0
-      c = Curl::Easy.new(url.to_s)
-      c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
-      c.http_post(*to_curb_params(params))
-      result = Parser.parse(params[:method], c.body_str)
+      # c = Curl::Easy.new(url.to_s)
+      # c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
+      # c.http_post(*to_curb_params(params))
+      
+      response = Curl::Easy.http_post(url.to_s, *to_curb_params(params)) do |c|
+        c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
+      end
+      
+      Parser.parse(params[:method], response.body_str)
     rescue Errno::ECONNRESET, EOFError
       if attempt == 0
         attempt += 1
@@ -23,12 +28,17 @@ module Facebooker
     end
     
     def post_file(params)
-      c = Curl::Easy.new(url.to_s)
-      c.multipart_form_post = true
-      c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
-      ps = to_curb_params(params)
-      c.http_post(*ps)
-      Parser.parse(params[:method], c.body_str)
+      # c = Curl::Easy.new(url.to_s)
+      # c.multipart_form_post = true
+      # c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
+      # c.http_post(*to_curb_params(params))
+      
+      response = Curl::Easy.http_post(url.to_s, *to_curb_params(params)) do |c|
+        c.multipart_form_post = true
+        c.timeout = ENV['FACEBOOKER_TIMEOUT'].to_i rescue c.timeout = nil
+      end
+      
+      Parser.parse(params[:method], response.body_str)
     end
     
     private
