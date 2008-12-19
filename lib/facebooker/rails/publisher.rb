@@ -213,6 +213,7 @@ module Facebooker
         attr_accessor :body_general
         attr_accessor :template_id
         attr_accessor :template_name
+        attr_accessor :story_size
         
         def target_ids=(val)
           @target_ids = val.is_a?(Array) ? val.join(",") : val
@@ -351,7 +352,7 @@ module Facebooker
         when Ref
           Facebooker::Session.create.server_cache.set_ref_handle(_body.handle,_body.fbml)
         when UserAction
-          @from.session.publish_user_action(_body.template_id,_body.data||{},_body.target_ids,_body.body_general)
+          @from.session.publish_user_action(_body.template_id,_body.data||{},_body.target_ids,_body.body_general,_body.story_size||nil)
         else
           raise UnspecifiedBodyType.new("You must specify a valid send_as")
         end
