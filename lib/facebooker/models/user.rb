@@ -165,8 +165,8 @@ module Facebooker
       session.get_photos(nil, nil, profile_pic_album_id)
     end
     
-    def upload_photo(multipart_post_file)
-      Photo.from_hash(session.post_file('facebook.photos.upload', {nil => multipart_post_file}))
+    def upload_photo(multipart_post_file, params = {})
+      Photo.from_hash(session.post_file('facebook.photos.upload', params.merge(nil => multipart_post_file)))
     end
     
     def profile_fbml
