@@ -113,7 +113,7 @@ module Facebooker
           if respond_to?(set_attr_method)
             self.__send__(set_attr_method, value) 
           else
-            Facebooker::Logging.log_info("**Warning**, Attempt to set non-attribute: #{key}",hash)
+            Facebooker::Logging.log_info("**Warning**, Attempt to set non-attribute: #{key}",hash.inspect)
           end
         end
         @populated = true
