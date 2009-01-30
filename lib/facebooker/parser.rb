@@ -477,14 +477,15 @@ module Facebooker
       604 => Facebooker::Session::FQLStatementNotIndexable,
       605 => Facebooker::Session::FQLFunctionDoesNotExist,
       606 => Facebooker::Session::FQLWrongNumberArgumentsPassedToFunction,
-      807 => Facebooker::Session::TemplateBundleInvalid
+      807 => Facebooker::Session::TemplateBundleInvalid,
+      1300 => Facebooker::Session::FeedStoriesNotPermitted
     }
     def self.process(data)
       response_element = element('error_response', data) rescue nil
       if response_element
         hash = hashinate(response_element)
         exception = EXCEPTIONS[Integer(hash['error_code'])] || StandardError
-        raise exception.new(hash['error_msg'])
+        raise exception.new("#{hash['error_code']}: #{hash['error_msg']}")
       end
     end
   end

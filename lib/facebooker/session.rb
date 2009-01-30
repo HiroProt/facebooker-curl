@@ -51,6 +51,7 @@ module Facebooker
     class UserRegistrationFailed < StandardError
       attr_accessor :failed_users
     end
+    class FeedStoriesNotPermitted < StandardError; end
     
     API_SERVER_BASE_URL       = ENV["FACEBOOKER_API"] == "new" ? "api.new.facebook.com" : "api.facebook.com"
     API_PATH_REST             = "/restserver.php"
